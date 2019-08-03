@@ -147,7 +147,7 @@ describe('Integration of all components', () => {
     const challenge = ethotp.generateChallenge();
     const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(challenge));
 
-    assert.strictEqual(ethotp.validateAndVerifyChallenge(challenge, signature, alice.address), true);
+    assert.strictEqual(ethotp.validateAndVerify(challenge, signature, alice.address), true);
   });
 
   it('quick wont work check haha :(', () => {
@@ -155,7 +155,7 @@ describe('Integration of all components', () => {
     const challenge = ethotp.generateChallenge();
     const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(challenge));
 
-    assert.strictEqual(ethotp.validateAndVerifyChallenge(challenge + "a", signature, alice.address), false);
+    assert.strictEqual(ethotp.validateAndVerify(challenge + "a", signature, alice.address), false);
   });
 
   it('should fail when validation fails', ()=>{
@@ -163,7 +163,7 @@ describe('Integration of all components', () => {
     const fakeChallenge = "lol not a real message";
     const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(fakeChallenge));
 
-    assert.strictEqual(ethotp.validateAndVerifyChallenge(fakeChallenge, signature, alice.address), false);
+    assert.strictEqual(ethotp.validateAndVerify(fakeChallenge, signature, alice.address), false);
   });
 
   it('should fail when verification fails', ()=>{
@@ -171,7 +171,7 @@ describe('Integration of all components', () => {
     const challenge = ethotp.generateChallenge();
     const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(challenge));
 
-    assert.strictEqual(ethotp.validateAndVerifyChallenge(challenge, signature, alice.address.substr(alice.address.length - 1) + "a"), false);
+    assert.strictEqual(ethotp.validateAndVerify(challenge, signature, alice.address.substr(alice.address.length - 1) + "a"), false);
   });
 
 });

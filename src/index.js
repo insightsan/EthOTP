@@ -28,7 +28,7 @@ export default class EthOTP {
    * @param address - address to verify with signed message
    * @return {boolean} if challenge response is valid and verified
    */
-  validateAndVerifyChallenge = (message, signature, address) => {
+  validateAndVerify = (message, signature, address) => {
     return this._isValidChallenge(message) && this._isVerified(message, signature, address);
   };
 
