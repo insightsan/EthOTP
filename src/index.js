@@ -22,17 +22,14 @@ export default class EthOTP {
   };
 
   /**
-   * Performs challenge payload validation and verification.
-   * @param challengePayload
-   * @return {boolean} if challenge response payload is valid and verified
+   * Performs challenge validation of message with signature and verification of address.
+   * @param message - challenge string
+   * @param signature - signature to be used to validate message
+   * @param address - address to verify with signed message
+   * @return {boolean} if challenge response is valid and verified
    */
-  validateAndVerifyChallengePayload = (challengePayload) => {
-    if (!this._isVerifiedPayload(challengePayload)) {
-      return false;
-    } else if (!this._validateChallenge(challengePayload.message)) {
-      return false;
-    }
-    return true;
+  validateAndVerifyChallenge = (message, signature, address) => {
+    return this._isValidChallenge(message) && this._isVerified(message, signature, address);
   };
 
   /**
@@ -68,20 +65,6 @@ export default class EthOTP {
     return false;
   };
 
-
-  /**
-   * Verifies that a payload has a valid message that corresponds to being signed by the payload's address by a
-   * @param payload
-   * @return {boolean}
-   */
-  _isVerifiedPayload = (payload) => {
-    if (payload === undefined) {
-      return false;
-    }
-
-    // TODO require encryption eventually? is that extra layer even useful at that point though...?
-    return this._isVerified(payload.message, payload.signature, payload.address);
-  };
 
   _isVerified = (message, signature, address) => {
     if (message === undefined || address === undefined || signature === undefined ||

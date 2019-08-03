@@ -48,186 +48,130 @@ describe('Checking phrase `challenges`', () => {
 describe('Verifying signed phrases from users', () => {
   const alice = EthCrypto.createIdentity();
   const msg = "whatever really";
-  const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(msg));
+  const sig = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(msg));
 
   it('should verify that valid signatures are valid', () => {
-    const payload = {
-      message: msg,
-      signature: signature,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = msg;
+    const signature = sig;
+    const address = alice.address;
+
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, true);
   });
 
   it('should not verify tampered messages', () => {
-    const payload = {
-      message: msg + "a",
-      signature: signature,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = msg + "a";
+    const signature = sig;
+    const address = alice.address;
+
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify 0 length messages', () => {
-    const payload = {
-      message: "",
-      signature: signature,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = "";
+    const signature = sig;
+    const address = alice.address;
+
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify undefined messages', () => {
-    const payload = {
-      message: undefined,
-      signature: signature,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
+    const message = undefined;
+    const signature = sig;
+    const address = alice.address;
 
-  it('should not verify missing messages', () => {
-    const payload = {
-      signature: signature,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify tampered addresses', () => {
-    const payload = {
-      message: msg,
-      signature: signature,
-      address: alice.address + "a",
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = msg;
+    const signature = sig;
+    const address = alice.address + "a";
+
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify 0 length addresses', () => {
-    const payload = {
-      message: msg,
-      signature: signature,
-      address: "",
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = msg;
+    const signature = sig;
+    const address = "";
+
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify undefined addresses', () => {
-    const payload = {
-      message: msg,
-      signature: signature,
-      address: undefined,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
+    const message = msg;
+    const signature = sig;
+    const address = undefined;
 
-  it('should not verify missing addresses', () => {
-    const payload = {
-      message: msg,
-      signature: signature,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify tampered signatures', () => {
-    let tamperedSig = signature.substr(0, signature.length - 5) + "aaaaa";
-    const payload = {
-      message: msg,
-      signature: tamperedSig,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = msg;
+    const tamperedSig = sig.substr(0, sig.length - 5) + "aaaaa";
+    const address = alice.address;
+
+    const result = ethotp._isVerified(message, tamperedSig, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify 0 length signatures', () => {
-    const payload = {
-      message: msg,
-      signature: "",
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
+    const message = msg;
+    const signature = "";
+    const address = alice.address;
+
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 
   it('should not verify undefined signatures', () => {
-    const payload = {
-      message: msg,
-      signature: undefined,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
+    const message = msg;
+    const signature = undefined;
+    const address = alice.address;
 
-  it('should not verify missing signatures', () => {
-    const payload = {
-      message: msg,
-      address: alice.address,
-    };
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
-
-  it('should not verify empty payload object', () => {
-    const payload = {};
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
-
-  it('should not verify undefined payload object', () => {
-    const payload = undefined;
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
-
-  it('should not verify incorrect type (string) payload object', () => {
-    const payload = "lol";
-    const result = ethotp._isVerifiedPayload(payload);
-    assert.strictEqual(result, false);
-  });
-
-  it('should not verify incorrect type (number) payload object', () => {
-    const payload = 12.1451;
-    const result = ethotp._isVerifiedPayload(payload);
+    const result = ethotp._isVerified(message, signature, address);
     assert.strictEqual(result, false);
   });
 });
-
 
 describe('Integration of all components', () => {
   it('should work haha :)', () => {
     const alice = EthCrypto.createIdentity();
     const challenge = ethotp.generateChallenge();
     const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(challenge));
-    const payload = {
-      message: challenge,
-      signature: signature,
-      address: alice.address,
-    };
 
-    assert.strictEqual(ethotp.validateAndVerifyChallengePayload(payload), true);
+    assert.strictEqual(ethotp.validateAndVerifyChallenge(challenge, signature, alice.address), true);
   });
 
   it('quick wont work check haha :(', () => {
     const alice = EthCrypto.createIdentity();
     const challenge = ethotp.generateChallenge();
     const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(challenge));
-    const payload = {
-      message: challenge + "a",
-      signature: signature,
-      address: alice.address,
-    };
 
-    assert.strictEqual(ethotp.validateAndVerifyChallengePayload(payload), false);
+    assert.strictEqual(ethotp.validateAndVerifyChallenge(challenge + "a", signature, alice.address), false);
   });
+
+  it('should fail when validation fails', ()=>{
+    const alice = EthCrypto.createIdentity();
+    const fakeChallenge = "lol not a real message";
+    const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(fakeChallenge));
+
+    assert.strictEqual(ethotp.validateAndVerifyChallenge(fakeChallenge, signature, alice.address), false);
+  });
+
+  it('should fail when verification fails', ()=>{
+    const alice = EthCrypto.createIdentity();
+    const challenge = ethotp.generateChallenge();
+    const signature = EthCrypto.sign(alice.privateKey, EthCrypto.hash.keccak256(challenge));
+
+    assert.strictEqual(ethotp.validateAndVerifyChallenge(challenge, signature, alice.address.substr(alice.address.length - 1) + "a"), false);
+  });
+
 });
