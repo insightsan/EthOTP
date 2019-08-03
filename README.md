@@ -1,4 +1,6 @@
 # EthOTP
+![Build Status](https://travis-ci.org/insightsan/EthOTP.svg?branch=master)
+
 EthOTP is a Node.js implementation of Ethereum One-Time Password (EthOTP) Authentication.
 It provides a costless mechanism of securely determining Ethereum address ownerships off-chain for any Ethereum network
 without transmission of the private key.
